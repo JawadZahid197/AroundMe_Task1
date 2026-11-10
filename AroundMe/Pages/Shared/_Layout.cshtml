@@ -1,0 +1,52 @@
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AroundMe</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background:#1f6f5c;">
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-page="/Index">📍 AroundMe</a>
+
+                <div class="ms-auto d-flex gap-2">
+                    @if (Context.Session.GetInt32("UserId") == null)
+                    {
+                        <a class="btn btn-outline-light" asp-page="/Login">Login</a>
+                        <a class="btn btn-light" asp-page="/Signup">Sign Up</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-warning" asp-page="/AddPlace">+ Share a Place</a>
+                        <a class="btn btn-outline-light" asp-page="/Profile">@Context.Session.GetString("Username")</a>
+                        <a class="btn btn-danger" asp-page="/Logout">Logout</a>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container my-4">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="text-center py-3 bg-light mt-5">
+        &copy; 2026 AroundMe
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

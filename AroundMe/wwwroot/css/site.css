@@ -1,0 +1,239 @@
+html {
+    font-size: 15px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f6f9f8;
+    color: #22312d;
+}
+
+/* Navbar */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+}
+
+    .navbar .btn {
+        border-radius: 50px;
+        transition: transform .2s;
+    }
+
+        .navbar .btn:hover {
+            transform: translateY(-2px);
+        }
+
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, #1f6f5c 0%, #3aa68c 60%, #6fd3b4 100%);
+    border-radius: 24px;
+    padding: 70px 20px 50px;
+    box-shadow: 0 10px 30px rgba(31,111,92,.3);
+}
+
+.search-box {
+    max-width: 650px;
+}
+
+    .search-box .form-control,
+    .search-box .btn {
+        border-radius: 50px;
+        border: 0;
+    }
+
+    .search-box .form-control {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        padding-left: 24px;
+    }
+
+    .search-box .btn {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        font-weight: 600;
+    }
+
+.stat-num {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* Category chips */
+.chip {
+    padding: 8px 18px;
+    border-radius: 50px;
+    background: #fff;
+    color: #1f6f5c;
+    border: 2px solid #d5ebe4;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all .2s ease;
+}
+
+    .chip:hover {
+        background: #e8f6f1;
+        transform: translateY(-3px);
+        color: #1f6f5c;
+    }
+
+    .chip.active {
+        background: #1f6f5c;
+        color: #fff;
+        border-color: #1f6f5c;
+    }
+
+/* Place cards */
+.place-card {
+    border-radius: 18px;
+    overflow: hidden;
+    transition: transform .3s ease, box-shadow .3s ease;
+    opacity: 0;
+    animation: fadeUp .6s ease forwards;
+}
+
+    .place-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 18px 35px rgba(0,0,0,.15) !important;
+    }
+
+.place-img {
+    position: relative;
+    height: 210px;
+    overflow: hidden;
+}
+
+    .place-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform .5s ease;
+    }
+
+.place-card:hover .place-img img {
+    transform: scale(1.12);
+}
+
+.img-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    background: linear-gradient(135deg, #cfeee3, #9fdcc7);
+    transition: transform .5s ease;
+}
+
+.place-card:hover .img-fallback {
+    transform: scale(1.12);
+}
+
+.cat-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(255,255,255,.92);
+    color: #1f6f5c;
+    padding: 7px 12px;
+    border-radius: 50px;
+    font-size: .8rem;
+}
+
+.btn-view {
+    background: #1f6f5c;
+    color: #fff;
+    border-radius: 50px;
+    padding: 6px 16px;
+    transition: all .2s;
+}
+
+    .btn-view:hover {
+        background: #17564a;
+        color: #fff;
+        transform: translateX(3px);
+    }
+
+/* Empty state */
+.empty-icon {
+    font-size: 4rem;
+}
+
+/* How it works */
+.how-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 28px 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.06);
+    transition: transform .3s, box-shadow .3s;
+    height: 100%;
+}
+
+    .how-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 28px rgba(0,0,0,.12);
+    }
+
+.how-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+/* Footer */
+footer {
+    color: #6b7d77;
+}
+
+/* Animation */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* Forms (Signup, Login, AddPlace) */
+.form-card {
+    max-width: 650px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.08);
+    animation: fadeUp .5s ease;
+}
+
+.form-control, .form-select {
+    border-radius: 12px;
+    padding: 10px 14px;
+    border: 2px solid #e1ede9;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: #3aa68c;
+        box-shadow: 0 0 0 4px rgba(58,166,140,.18);
+    }
+
+.btn-success {
+    background: #1f6f5c;
+    border-color: #1f6f5c;
+    border-radius: 12px;
+    transition: transform .2s, background .2s;
+}
+
+    .btn-success:hover {
+        background: #17564a;
+        border-color: #17564a;
+        transform: translateY(-2px);
+    }

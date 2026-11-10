@@ -1,0 +1,45 @@
+﻿@page
+@model AroundMe.Pages.AddPlaceModel
+@{ ViewData["Title"] = "Share a Place"; }
+
+<div class="form-card mx-auto">
+    <h3 class="fw-bold mb-1">📍 Share a Place</h3>
+    <p class="text-muted mb-4">Apni pasandida jagah doosron ke saath share karo.</p>
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Place name</label>
+            <input asp-for="PlaceName" class="form-control" placeholder="e.g. Brew & Beans" />
+            <span asp-validation-for="PlaceName" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Category</label>
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
+                    <option value="">-- Select --</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Location</label>
+                <input asp-for="Location" class="form-control" placeholder="Area, City" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Description</label>
+            <textarea asp-for="Description" rows="4" class="form-control" placeholder="Yeh jagah kyun achi hai?"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-semibold">Photo (jpg, png, webp, max 5 MB)</label>
+            <input asp-for="Photo" type="file" accept="image/*" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">Post Place</button>
+        <div class="text-danger mt-2">@Model.Message</div>
+    </form>
+</div>
