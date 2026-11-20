@@ -1,5 +1,5 @@
 using AroundMe.Models;
-using AroundMe.Services;
+using AroundMe.Repositories;
 using AroundMe.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -7,38 +7,84 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AroundMe.Controllers;
-[Authorize] public class PlacesController(PlaceRepository places,UserManager<ApplicationUser> users,IWebHostEnvironment env):Controller
+
+[Authorize]
+public class PlacesController : Controller
 {
-    [HttpGet] public IActionResult Create()
+    private readonly IPlaceRepository _places;
+    private readonly ICategoryRepository _categories;
+    private readonly UserManager<ApplicationUser> _users;
+    private readonly IWebHostEnvironment _environment;
+
+    public PlacesController(IPlaceRepository places, ICategoryRepository categories,
+        UserManager<ApplicationUser> users, IWebHostEnvironment environment)
     {
-        var m=new PlaceCreateViewModel();
-        Fill(m);
-        return View(m);
+        _places = places;
+        _categories = categories;
+        _users = users;
+        _environment = environment;
     }
-    [HttpPost,ValidateAntiForgeryToken,RequestSizeLimit(6*1024*1024)] public async Task<IActionResult> Create(PlaceCreateViewModel model)
+
+    [HttpGet]
+    public async Task<IActionResult> Create()
     {
-        Fill(model);
-        var user=await users.GetUserAsync(User);
-        if(user?.LegacyUserId==null)return Challenge();
-        if(model.Photo is {Length:>0})
+        var model = new PlaceCreateViewModel();
+        await FillCategoriesAsync(model);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(6 * 1024 * 1024)]
+    public async Task<IActionResult> Create(PlaceCreateViewModel model)
+    {
+        await FillCategoriesAsync(model);
+        var user = await _users.GetUserAsync(User);
+
+        if (user?.LegacyUserId == null)
         {
-            var ext=Path.GetExtension(model.Photo.FileName).ToLowerInvariant();
-            if(!new[]{".jpg",".jpeg",".png",".webp"}.Contains(ext)||model.Photo.Length>5*1024*1024)ModelState.AddModelError(nameof(model.Photo),"Use JPG, PNG or WEBP up to 5 MB.");
+            return Challenge();
         }
-        if(!ModelState.IsValid)return View(model);
-        string? imagePath=null;
-        if(model.Photo is {Length:>0})
+
+        if (model.Photo != null && model.Photo.Length > 0)
         {
-            var ext=Path.GetExtension(model.Photo.FileName).ToLowerInvariant();
-            var folder=Path.Combine(env.WebRootPath,"Uploads");
+            var extension = Path.GetExtension(model.Photo.FileName).ToLowerInvariant();
+            var allowed = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+
+            if (!allowed.Contains(extension) || model.Photo.Length > 5 * 1024 * 1024)
+            {
+                ModelState.AddModelError(nameof(model.Photo), "Use JPG, PNG or WEBP up to 5 MB.");
+            }
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        string? imagePath = null;
+        if (model.Photo != null && model.Photo.Length > 0)
+        {
+            var extension = Path.GetExtension(model.Photo.FileName).ToLowerInvariant();
+            var folder = Path.Combine(_environment.WebRootPath, "Uploads");
             Directory.CreateDirectory(folder);
-            var file=Guid.NewGuid().ToString("N")+ext;
-            await using var stream=System.IO.File.Create(Path.Combine(folder,file));
+            var fileName = Guid.NewGuid().ToString("N") + extension;
+            await using var stream = System.IO.File.Create(Path.Combine(folder, fileName));
             await model.Photo.CopyToAsync(stream);
-            imagePath="Uploads/"+file;
+            imagePath = "Uploads/" + fileName;
         }
-        places.Add(user.LegacyUserId.Value,model,imagePath);
-        return RedirectToAction("Index","Home");
+
+        await _places.AddAsync(user.LegacyUserId.Value, model, imagePath);
+        return RedirectToAction("Index", "Home");
     }
-    private void Fill(PlaceCreateViewModel model)=>model.Categories=places.Categories().Select(c=>new SelectListItem(c.CategoryName,c.CategoryId.ToString())).ToList();
+
+    private async Task FillCategoriesAsync(PlaceCreateViewModel model)
+    {
+        var categories = await _categories.GetAllAsync();
+        model.Categories = categories.Select(category => new SelectListItem
+        {
+            Text = category.CategoryName,
+            Value = category.CategoryId.ToString()
+        }).ToList();
+    }
 }

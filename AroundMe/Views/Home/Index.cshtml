@@ -21,7 +21,7 @@
     <h1 class="display-5 fw-bold">Discover places around you</h1>
     <p class="lead mb-4">Cafes, study spots, parks and hidden gems, recommended by people nearby.</p>
 
-    <form method="get" class="search-box mx-auto">
+    <form method="get" class="search-box mx-auto" id="search-form" asp-controller="Home" asp-action="Index">
         <div class="input-group input-group-lg">
             <input type="text" name="Search" value="@Model.Search" class="form-control" placeholder="Search a place, area or keyword..." />
             @if (Model.CategoryId != 0)
@@ -41,70 +41,22 @@
 <!-- CATEGORY CHIPS -->
 <div class="chips d-flex flex-wrap justify-content-center gap-2 my-4">
     <a asp-controller="Home" asp-action="Index" asp-route-search="@Model.Search"
-       class="chip @(Model.CategoryId == 0 ? "active" : "")">✨ All</a>
+       class="chip ajax-category @(Model.CategoryId == 0 ? "active" : "")">✨ All</a>
 
     @foreach (var c in Model.Categories)
     {
         <a asp-controller="Home" asp-action="Index" asp-route-categoryId="@c.CategoryId" asp-route-search="@Model.Search"
-           class="chip @(Model.CategoryId == c.CategoryId ? "active" : "")">
+           class="chip ajax-category @(Model.CategoryId == c.CategoryId ? "active" : "")">
             @Emoji(c.CategoryName) @c.CategoryName
         </a>
     }
 </div>
 
-<!-- PLACE CARDS -->
-@if (Model.Places.Count == 0)
-{
-    <div class="empty text-center py-5">
-        <div class="empty-icon">🗺️</div>
-        <h4 class="mt-3">Koi place nahi mili</h4>
-        <p class="text-muted">Search ya category badal kar dekho, ya khud pehli recommendation share karo.</p>
-       @if (!User.Identity!.IsAuthenticated)
-        {
-            <a class="btn btn-success" asp-controller="Account" asp-action="Register">Join AroundMe</a>
-        }
-        else
-        {
-            <a class="btn btn-success" asp-controller="Places" asp-action="Create">+ Share a Place</a>
-        }
-    </div>
-}
-else
-{
-    <div class="row g-4">
-        @{ int i = 0; }
-        @foreach (var p in Model.Places)
-        {
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="place-card card h-100 border-0 shadow-sm" style="animation-delay:@(i * 80)ms">
-                    <div class="place-img">
-                        @if (!string.IsNullOrEmpty(p.ImagePath))
-                        {
-                            <img src="@Url.Content("~/" + p.ImagePath)" alt="@p.PlaceName" />
-                        }
-                        else
-                        {
-                            <div class="img-fallback">@Emoji(p.CategoryName)</div>
-                        }
-                        <span class="badge cat-badge">@Emoji(p.CategoryName) @p.CategoryName</span>
-                    </div>
-
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold mb-1">@p.PlaceName</h5>
-                        <p class="text-muted small mb-2">📍 @p.Location</p>
-                        <p class="card-text">@Short(p.Description)</p>
-                    </div>
-
-                    <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center pb-3">
-                        <small class="text-muted">by <strong>@p.Username</strong> · ❤️ @p.LikeCount</small>
-                        <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-view">View →</a>
-                    </div>
-                </div>
-            </div>
-            i++;
-        }
-    </div>
-}
+<!-- AJAX replaces this section without reloading the page. -->
+<div id="place-results" aria-live="polite">
+    <partial name="_PlaceResults" model="Model" />
+</div>
+<div id="search-status" class="text-muted small mt-2" role="status"></div>
 
 <!-- HOW IT WORKS -->
 <section class="how mt-5 pt-4">
@@ -133,3 +85,6 @@ else
         </div>
     </div>
 </section>
+@section Scripts {
+    <script src="~/js/places-ajax.js" asp-append-version="true"></script>
+}
